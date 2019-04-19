@@ -1,4 +1,4 @@
-package edu.utep.cs.cs4330.navigationdrawertest;
+package edu.utep.cs.cs4330.courseorganizer;
 
 import org.junit.Test;
 

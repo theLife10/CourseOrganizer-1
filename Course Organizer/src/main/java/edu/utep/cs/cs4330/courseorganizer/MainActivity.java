@@ -1,4 +1,4 @@
-package edu.utep.cs.cs4330.navigationdrawertest;
+package edu.utep.cs.cs4330.courseorganizer;
 
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
