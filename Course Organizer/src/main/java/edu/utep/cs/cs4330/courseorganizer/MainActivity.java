@@ -99,13 +99,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case 0:
-                Fragment fragment = new ChatFragment();
+                Fragment fragment = new CourseFragment();
                 Bundle bundle = new Bundle();
-                bundle.putString("courseName", extractedCourseList.get(0).getCourseTitle());
+                bundle.putString("courseTitle", extractedCourseList.get(0).getCourseTitle());
                 fragment.setArguments(bundle);
 
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new ChatFragment()).commit();
+                        fragment).commit();
                 break;
             case 1:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,

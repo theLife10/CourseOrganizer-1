@@ -124,13 +124,11 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public Course getCourse(String courseName) {
-        Course course;
-
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT "+ KEY_COURSE +" FROM " + TASK_TABLE + " WHERE "+ KEY_COURSE + " = ?",new String[]{courseName});
+        Cursor cursor = db.rawQuery("SELECT * FROM " + COURSE_TABLE + " WHERE "+ KEY_COURSE + " = ?",new String[]{courseName});
 
         if (cursor.moveToFirst()) {
-            course = new Course(cursor.getString(cursor.getColumnIndex(KEY_COURSE)),
+            return new Course(cursor.getString(cursor.getColumnIndex(KEY_COURSE)),
                     cursor.getString(cursor.getColumnIndex(KEY_DAYS)),
                     cursor.getString(cursor.getColumnIndex(KEY_TIME)),
                     cursor.getString(cursor.getColumnIndex(KEY_LOCATION)),
@@ -139,7 +137,6 @@ public class DBHelper extends SQLiteOpenHelper {
                     cursor.getString(cursor.getColumnIndex(KEY_PROFESSOR_EMAIL)),
                     cursor.getString(cursor.getColumnIndex(KEY_PROFESSOR_OFFICE)),
                     cursor.getString(cursor.getColumnIndex(KEY_PROFESSOR_OFFICE_HOURS)));
-            return course;
         }
         return null;
     }
