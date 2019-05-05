@@ -1,5 +1,6 @@
 package edu.utep.cs.cs4330.courseorganizer;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -37,6 +38,11 @@ public class CourseFragment extends Fragment {
         textCourseLocation.setText("Location: " + course.getLocation());
         textCourseDays.setText("Days: " + course.getDays());
         textCourseTime.setText("Time: " + course.getTime());
+
+        view.findViewById(R.id.titleInstructor).setBackgroundColor(Color.rgb(0, 142, 180));
+        view.findViewById(R.id.titleLocation).setBackgroundColor(Color.rgb(0, 142, 180));
+        view.findViewById(R.id.titleTasks).setBackgroundColor(Color.rgb(0, 142, 180));
+
 
         ArrayList<Task> taskList = dbHelper.getCourseTasks(getArguments().getString("courseTitle"));
         CustomAdapter listAdapter = new CustomAdapter(getContext(), taskList);

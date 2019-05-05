@@ -1,6 +1,7 @@
 package edu.utep.cs.cs4330.courseorganizer;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Course Organizer");
+        toolbar.setBackgroundColor(Color.rgb(0,88,135));
 
 
         //Configure Navigation Drawer
