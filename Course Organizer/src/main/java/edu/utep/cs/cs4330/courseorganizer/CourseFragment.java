@@ -6,7 +6,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toolbar;
+
+import java.util.ArrayList;
 
 
 public class CourseFragment extends Fragment {
@@ -27,12 +31,17 @@ public class CourseFragment extends Fragment {
         TextView textCourseTime = view.findViewById(R.id.textCourseTime);
 
         textProfessorName.setText(course.getProfessorName());
-        textProfessorPhone.setText(course.getProfessorPhone());
-        textProfessorEmail.setText(course.getProfessorEmail());
-        textProfessorOfficeHours.setText(course.getProfessorOfficeHours());
-        textCourseLocation.setText(course.getLocation());
-        textCourseDays.setText(course.getDays());
-        textCourseTime.setText(course.getTime());
+        textProfessorPhone.setText("Phone: " + course.getProfessorPhone());
+        textProfessorEmail.setText("Email: " + course.getProfessorEmail());
+        textProfessorOfficeHours.setText("Office Hours: " + course.getProfessorOfficeHours());
+        textCourseLocation.setText("Location: " + course.getLocation());
+        textCourseDays.setText("Days: " + course.getDays());
+        textCourseTime.setText("Time: " + course.getTime());
+
+        ArrayList<Task> taskList = dbHelper.getCourseTasks(getArguments().getString("courseTitle"));
+        CustomAdapter listAdapter = new CustomAdapter(getContext(), taskList);
+        ListView listView = view.findViewById(R.id.listViewTasks);
+        listView.setAdapter(listAdapter);
 
         return view;
     }

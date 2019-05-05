@@ -145,7 +145,7 @@ public class DBHelper extends SQLiteOpenHelper {
         ArrayList<Task> taskList = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT " + KEY_TASK + " FROM " + TASK_TABLE + " WHERE " + KEY_COURSE + " = ?",new String[]{courseName});
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TASK_TABLE + " WHERE " + KEY_COURSE + " = ?",new String[]{courseName});
 
         if (cursor.moveToFirst()) {
             do {
@@ -157,12 +157,6 @@ public class DBHelper extends SQLiteOpenHelper {
         return taskList;
     }
 
-
-
-
-
-
-
     public void addTasks(String task,String course, String dueDate){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -170,8 +164,14 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put(KEY_TASK, task);
         values.put(KEY_COURSE, course);
         values.put(KEY_DUE_DATE, dueDate);
-        long id = db.insert(TASK_TABLE, null, values);
+        db.insert(TASK_TABLE, null, values);
     }
+
+
+
+
+
+
 
     public void deleteData(String id){
         SQLiteDatabase db = this.getWritableDatabase();

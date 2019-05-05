@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -54,28 +55,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         /* **************************************For testing purposes************************************************ */
         ArrayList<Course> insertedCourseList = new ArrayList<>();
+        dbHelper = new DBHelper(this);
 
         insertedCourseList.add(new Course("CS 1401", "MWF", "12:00PM - 1:00PM",
                 "CCSB 1.01", "Dr.Professor", "(111)111-1111",
                 "prof@uni.edu", "CCSB 1.02", "1:00PM - 2:00PM"));
 
+        dbHelper.addTasks("Create Skynet", insertedCourseList.get(0).getCourseTitle(), "1/1/1");
+
         insertedCourseList.add(new Course("HIST 2020", "W", "2:00PM - 3:00PM",
                 "LAC 320", "Dr. Pepper", "(222)222-2222",
                 "pepp@uni.edu", "CCSB 1.03", "1:00PM - 2:00PM"));
+
+        dbHelper.addTasks("Write paper on Napoleonic Wars", insertedCourseList.get(1).getCourseTitle(), "2/2/2");
 
         insertedCourseList.add(new Course("ENG 101", "TR", "7:00AM - 8:00AM",
                 "UGLC 016", "Dr. Love", "(333)333-3333",
                 "lov@uni.edu", "CCSB 1.04", "1:00PM - 2:00PM"));
 
+        dbHelper.addTasks("Read Gravity's Rainbow", insertedCourseList.get(2).getCourseTitle(), "3/3/3");
+
         insertedCourseList.add(new Course("MATH 3141", "T", "11:00AM - 12:00PM",
                 "BSN 240", "Dr. Oc", "(444)444-4444",
                 "oc@uni.edu", "CCSB 1.05", "1:00PM - 2:00PM"));
 
-        dbHelper = new DBHelper(this);
+        dbHelper.addTasks("Solve Riemman Hypothesis", insertedCourseList.get(3).getCourseTitle(), "4/4/4");
+
         dbHelper.addCourseList(insertedCourseList);
 
+        dbHelper = new DBHelper(this);
         extractedCourseList = dbHelper.getAllCourses();
 
+        Log.i("1", String.valueOf(extractedCourseList.size()));
 
         final Menu menu = navigationView.getMenu();
         MenuItem runtime_item = menu.add(0,0,0, extractedCourseList.get(0).getCourseTitle());
@@ -97,33 +108,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case 0:
-                Fragment fragment = new CourseFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("courseTitle", extractedCourseList.get(0).getCourseTitle());
-                fragment.setArguments(bundle);
+        Fragment fragment = new CourseFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("courseTitle", extractedCourseList.get(item.getItemId()).getCourseTitle());
+        fragment.setArguments(bundle);
 
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        fragment).commit();
-                break;
-            case 1:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new MessageFragment()).commit();
-                break;
-            case 2:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new ProfileFragment()).commit();
-                break;
-            case 3:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new MessageFragment()).commit();
-                break;
-            case 4:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new AddFragment()).commit();
-                break;
-        }
+        getSupportActionBar().setTitle("Course Organizer " + extractedCourseList.get(item.getItemId()).getCourseTitle());
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                fragment).commit();
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -136,4 +129,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             super.onBackPressed();
         }
-    }}
+    }
+
+
+}
