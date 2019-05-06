@@ -167,6 +167,28 @@ public class DBHelper extends SQLiteOpenHelper {
         db.insert(TASK_TABLE, null, values);
     }
 
+    public void updateCourse(Course changedCourse){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE " + COURSE_TABLE +
+                " SET " + KEY_PROFESSOR + " = '" + changedCourse.getProfessorName() +
+                "', " + KEY_PROFESSOR_PHONE + " = '" + changedCourse.getProfessorPhone() +
+                "', " + KEY_PROFESSOR_EMAIL + " = '" + changedCourse.getProfessorEmail() +
+                "', " + KEY_PROFESSOR_OFFICE + " = '" + changedCourse.getProfessorOfficeLocation() +
+                "', " + KEY_PROFESSOR_OFFICE_HOURS + " = '" + changedCourse.getProfessorOfficeHours() +
+                "', " + KEY_LOCATION + " = '" + changedCourse.getLocation() +
+                "', " + KEY_DAYS + " = '" + changedCourse.getDays() +
+                "', " + KEY_TIME + " = '" + changedCourse.getTime() +
+                "' WHERE " + KEY_COURSE + " = '" + changedCourse.getCourseTitle() + "'";
+        db.execSQL(query);
+    }
+
+    public void deleteTask(Task task){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM " + TASK_TABLE + " WHERE " +
+                KEY_TASK + " ='" + task.getTask() + "'";
+        db.execSQL(query);
+    }
+
 
 
 

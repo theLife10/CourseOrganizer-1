@@ -23,6 +23,7 @@ public class CustomAdapter extends BaseAdapter {
     Handler handler;
     Animation animation;
 
+
     public CustomAdapter(Context mContext, ArrayList<Task> taskList){
         this.mContext = mContext;
         this.taskList = taskList;
@@ -62,6 +63,8 @@ public class CustomAdapter extends BaseAdapter {
 
         listView = parent.findViewById(R.id.listViewTasks);
 
+        DBHelper dbHelper = new DBHelper(mContext);
+
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -70,6 +73,7 @@ public class CustomAdapter extends BaseAdapter {
                     Log.i("CheckBox Listener", "Check heard");
                     Log.i("Button Tag", String.valueOf(buttonView.getTag()));
                     Log.i("taskList length before", String.valueOf(taskList.size()));
+                    dbHelper.deleteTask(taskList.get((int)buttonView.getTag()));
                     taskList.remove((int)buttonView.getTag());
                     Log.i("taskList length after", String.valueOf(taskList.size()));
                     notifyDataSetChanged();

@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/courseMenuButtonAdd"
+        android:title="Add Task"
+        app:showAsAction="never"/>
     <item android:id="@+id/courseMenuButtonInstructor"
         android:title="Edit Instructor"
         app:showAsAction="never" />
     <item android:id="@+id/courseMenuButtonLocation"
         android:title="Edit Location"
         app:showAsAction="never"/>
-    <item android:id="@+id/courseMenuButtonAdd"
-        android:title="Add Task"
+    <item android:id="@+id/courseMenuButtonDelete"
+        android:title="Delete Course"
         app:showAsAction="never"/>
 </menu>

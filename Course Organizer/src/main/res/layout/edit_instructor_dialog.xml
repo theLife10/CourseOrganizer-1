@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/editInstructorName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Enter Instructor Name"/>
+
+    <EditText
+        android:id="@+id/editInstructorPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Enter Instructor Phone"/>
+
+    <EditText
+        android:id="@+id/editInstructorEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Enter Instructor Email"/>
+
+    <EditText
+        android:id="@+id/editInstructorOffice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Enter Instructor Office"/>
+
+    <EditText
+        android:id="@+id/editInstructorOfficeHours"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Enter Instructor Office Hours"/>
+
+</LinearLayout>

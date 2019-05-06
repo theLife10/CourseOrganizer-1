@@ -46,7 +46,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingTop="20dp"
+                    android:paddingTop="10dp"
                     android:paddingLeft="40dp"
                     android:orientation="vertical">
                     <TextView
@@ -65,6 +65,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Email: ycheon@utep.edu"/>
+
+                    <TextView
+                        android:id="@+id/textProfessorOffice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Place"/>
 
                     <TextView
                         android:id="@+id/textProfessorOfficeHours"
