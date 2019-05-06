@@ -4,11 +4,14 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
     <CheckBox
         android:id="@+id/checkBoxTask"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"/>
+        android:layout_alignParentLeft="true"
+        android:clickable="true"
+        android:enabled="true" />
     <TextView
         android:id="@+id/textTaskDueDate"
         android:layout_width="wrap_content"

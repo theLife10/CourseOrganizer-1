@@ -1,5 +1,6 @@
 package edu.utep.cs.cs4330.courseorganizer;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -12,18 +13,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.zip.Inflater;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawer;
     private DBHelper dbHelper;
     private SQLiteDatabase database;
     private ArrayList<Course> extractedCourseList;
+    private ListView listView;
+    private CheckBox checkBox;
+    private ArrayList<Task> taskList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportActionBar().setTitle("Course Organizer");
         toolbar.setBackgroundColor(Color.rgb(0,88,135));
 
-
         //Configure Navigation Drawer
         drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -46,14 +55,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
-        /*if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    new MessageFragment()).commit();
-            navigationView.setCheckedItem(R.id.nav_message);
-        }*/
-
-
 
         /* **************************************For testing purposes************************************************ */
         ArrayList<Course> insertedCourseList = new ArrayList<>();
@@ -64,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 "prof@uni.edu", "CCSB 1.02", "1:00PM - 2:00PM"));
 
         dbHelper.addTasks("Create Skynet", insertedCourseList.get(0).getCourseTitle(), "1/1/1");
+        dbHelper.addTasks("Hack NSA", insertedCourseList.get(0).getCourseTitle(), "1/1/1");
+        dbHelper.addTasks("Towers of Hanoi", insertedCourseList.get(0).getCourseTitle(), "1/1/1");
 
         insertedCourseList.add(new Course("HIST 2020", "W", "2:00PM - 3:00PM",
                 "LAC 320", "Dr. Pepper", "(222)222-2222",
@@ -105,6 +108,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         runtime_item = menu.add(0,4,0,"Add Course");
         runtime_item.setIcon(R.drawable.ic_add);
+
+        //listView.setOnItemClickListener(this::removeOnListItemClick);
+
+        if (savedInstanceState == null) {
+            navigationView.setCheckedItem(menu.getItem(0));
+
+            Fragment fragment = new CourseFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("courseTitle", extractedCourseList.get(0).getCourseTitle());
+            fragment.setArguments(bundle);
+
+            getSupportActionBar().setTitle("Course Organizer " + extractedCourseList.get(0).getCourseTitle());
+
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                    fragment).commit();
+        }
         /* ************************************************************************************************************* */
     }
 
@@ -132,6 +151,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
         }
     }
+
+    public ArrayList<Task> getTaskList(){return taskList;}
 
 
 }
