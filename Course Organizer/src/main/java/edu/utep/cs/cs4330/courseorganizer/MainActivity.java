@@ -1,6 +1,7 @@
 package edu.utep.cs.cs4330.courseorganizer;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -21,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -34,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ListView listView;
     private CheckBox checkBox;
     private ArrayList<Task> taskList;
+    private Course newCourse;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Log.i("1", String.valueOf(extractedCourseList.size()));
 
-        final Menu menu = navigationView.getMenu();
+        menu = navigationView.getMenu();
         MenuItem runtime_item = menu.add(0,0,0, extractedCourseList.get(0).getCourseTitle());
         runtime_item.setIcon(R.drawable.ic_school);
 
@@ -106,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         runtime_item = menu.add(0,3,0,extractedCourseList.get(3).getCourseTitle());
         runtime_item.setIcon(R.drawable.ic_school);
 
-        runtime_item = menu.add(0,4,0,"Add Course");
+        runtime_item = menu.add(1,5,0,"Add Course");
         runtime_item.setIcon(R.drawable.ic_add);
 
         //listView.setOnItemClickListener(this::removeOnListItemClick);
@@ -129,6 +133,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        if(item.getGroupId() == 1){
+            addCourseDialog();
+            return true;
+        }
+
         Fragment fragment = new CourseFragment();
         Bundle bundle = new Bundle();
         bundle.putString("courseTitle", extractedCourseList.get(item.getItemId()).getCourseTitle());
@@ -150,6 +159,69 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             super.onBackPressed();
         }
+    }
+
+    public void addCourseDialog(){
+        //Attaches the calling activity to the dialog
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
+        //Retrieve and prepare the UI for the dialog box
+        View view = getLayoutInflater().inflate(R.layout.add_course_dialog, null);
+
+        //Set textViews
+        TextView courseTitle = view.findViewById(R.id.addCourseTitle);
+
+        TextView instructorName = view.findViewById(R.id.addInstructorName);
+        TextView instructorPhone = view.findViewById(R.id.addInstructorPhone);
+        TextView instructorEmail = view.findViewById(R.id.addInstructorEmail);
+        TextView instructorOffice = view.findViewById(R.id.addInstructorOffice);
+        TextView instructorOfficeHours = view.findViewById(R.id.addInstructorOfficeHours);
+
+        TextView courseLocation = view.findViewById(R.id.addLocation);
+        TextView courseDays = view.findViewById(R.id.addCourseDays);
+        TextView courseTime = view.findViewById(R.id.addCourseTime);
+
+        //Assigns the UI to the dialog box and sets the title and behavior of positive
+        //and negative buttons
+        builder.setView(view)
+                .setTitle("Add Course")
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    /**
+                     * Not implemented closes dialog by default.
+                     * @param dialog The associated dialog
+                     * @param which
+                     */
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+
+                .setPositiveButton("Apply", new DialogInterface.OnClickListener() {
+                    /**
+                     * Determines behavior of apply button on click, passes the string used to pass
+                     * string back to DetailActivity
+                     * @param dialog The associated dialog
+                     * @param which
+                     */
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Apply changes
+                        newCourse = new Course(courseTitle.getText().toString(),
+                                courseDays.getText().toString(),
+                                courseTime.getText().toString(),
+                                courseLocation.getText().toString(),
+                                instructorName.getText().toString(),
+                                instructorPhone.getText().toString(),
+                                instructorEmail.getText().toString(),
+                                instructorOffice.getText().toString(),
+                                instructorOfficeHours.getText().toString());
+                        dbHelper.addCourse(newCourse);
+                        menu.add(0,4,0, newCourse.getCourseTitle());
+
+                    }
+                });
+        android.app.AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     public ArrayList<Task> getTaskList(){return taskList;}

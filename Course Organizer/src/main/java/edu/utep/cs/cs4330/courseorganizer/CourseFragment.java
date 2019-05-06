@@ -157,7 +157,7 @@ public class CourseFragment extends Fragment {
         //Attaches the calling activity to the dialog
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
         //Retrieve and prepare the UI for the dialog box
-        View view = getLayoutInflater().inflate(R.layout.edit_instructor_dialog, null);
+        View view = getLayoutInflater().inflate(R.layout.instructor_dialog, null);
 
         //Set textViews
         TextView instructorName = view.findViewById(R.id.editInstructorName);
@@ -218,7 +218,7 @@ public class CourseFragment extends Fragment {
         //Attaches the calling activity to the dialog
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
         //Retrieve and prepare the UI for the dialog box
-        View view = getLayoutInflater().inflate(R.layout.edit_location_dialog, null);
+        View view = getLayoutInflater().inflate(R.layout.location_dialog, null);
 
         TextView courseLocation = view.findViewById(R.id.editLocation);
         TextView courseDays = view.findViewById(R.id.editCourseDays);
