@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ArrayList<Task> taskList;
     private Course newCourse;
     private Menu menu;
+    NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,11 +55,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //Configure Navigation Drawer
         drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        //extractedCourseList = dbHelper.getAllCourses();
+        menu = navigationView.getMenu();
+
 
         /* **************************************For testing purposes************************************************ */
         ArrayList<Course> insertedCourseList = new ArrayList<>();
@@ -131,6 +136,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         /* ************************************************************************************************************* */
     }
 
+    public void updateNavigationMenu(ArrayList<Course> courseList){
+        menu.clear();
+        MenuItem newMenuItem;
+        for(int i = 0; i < courseList.size(); i++){
+            newMenuItem = menu.add(0, i, 0, courseList.get(i).getCourseTitle());
+            newMenuItem.setIcon(R.drawable.ic_school);
+        }
+        newMenuItem = menu.add(1, 0, 0, "Add");
+        newMenuItem.setIcon(R.drawable.ic_add);
+
+        navigationView.inflateMenu(R.menu.draw_menu);
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         if(item.getGroupId() == 1){
@@ -196,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 })
 
-                .setPositiveButton("Apply", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Add Course", new DialogInterface.OnClickListener() {
                     /**
                      * Determines behavior of apply button on click, passes the string used to pass
                      * string back to DetailActivity
@@ -215,8 +233,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 instructorEmail.getText().toString(),
                                 instructorOffice.getText().toString(),
                                 instructorOfficeHours.getText().toString());
+                        extractedCourseList.add(newCourse);
                         dbHelper.addCourse(newCourse);
-                        menu.add(0,4,0, newCourse.getCourseTitle());
+                        updateNavigationMenu(extractedCourseList);
 
                     }
                 });
