@@ -72,6 +72,60 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
+    public void addCourse(Course course){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_COURSE, course.getCourseTitle());
+        values.put(KEY_DAYS, course.getDays());
+        values.put(KEY_TIME, course.getTime());
+        values.put(KEY_LOCATION, course.getLocation());
+        values.put(KEY_PROFESSOR, course.getProfessorName());
+        values.put(KEY_PROFESSOR_PHONE, course.getProfessorPhone());
+        values.put(KEY_PROFESSOR_EMAIL, course.getProfessorEmail()) ;
+        values.put(KEY_PROFESSOR_OFFICE, course.getProfessorOfficeLocation());
+        values.put(KEY_PROFESSOR_OFFICE_HOURS, course.getProfessorOfficeHours());
+
+        db.insert(COURSE_TABLE, null, values);
+    }
+
+    public void addCourseList(ArrayList<Course> courseList){
+        for(Course course: courseList) addCourse(course);
+    }
+
+    public void updateCourse(Course changedCourse){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE " + COURSE_TABLE +
+                " SET " + KEY_PROFESSOR + " = '" + changedCourse.getProfessorName() +
+                "', " + KEY_PROFESSOR_PHONE + " = '" + changedCourse.getProfessorPhone() +
+                "', " + KEY_PROFESSOR_EMAIL + " = '" + changedCourse.getProfessorEmail() +
+                "', " + KEY_PROFESSOR_OFFICE + " = '" + changedCourse.getProfessorOfficeLocation() +
+                "', " + KEY_PROFESSOR_OFFICE_HOURS + " = '" + changedCourse.getProfessorOfficeHours() +
+                "', " + KEY_LOCATION + " = '" + changedCourse.getLocation() +
+                "', " + KEY_DAYS + " = '" + changedCourse.getDays() +
+                "', " + KEY_TIME + " = '" + changedCourse.getTime() +
+                "' WHERE " + KEY_COURSE + " = '" + changedCourse.getCourseTitle() + "'";
+        db.execSQL(query);
+    }
+
+    public Course getCourse(String courseName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + COURSE_TABLE + " WHERE "+ KEY_COURSE + " = ?",new String[]{courseName});
+
+        if (cursor.moveToFirst()) {
+            return new Course(cursor.getString(cursor.getColumnIndex(KEY_COURSE)),
+                    cursor.getString(cursor.getColumnIndex(KEY_DAYS)),
+                    cursor.getString(cursor.getColumnIndex(KEY_TIME)),
+                    cursor.getString(cursor.getColumnIndex(KEY_LOCATION)),
+                    cursor.getString(cursor.getColumnIndex(KEY_PROFESSOR)),
+                    cursor.getString(cursor.getColumnIndex(KEY_PROFESSOR_PHONE)),
+                    cursor.getString(cursor.getColumnIndex(KEY_PROFESSOR_EMAIL)),
+                    cursor.getString(cursor.getColumnIndex(KEY_PROFESSOR_OFFICE)),
+                    cursor.getString(cursor.getColumnIndex(KEY_PROFESSOR_OFFICE_HOURS)));
+        }
+        return null;
+    }
+
     public ArrayList<Course> getAllCourses(){
         ArrayList<Course> courseList = new ArrayList<>();
 
@@ -102,43 +156,23 @@ public class DBHelper extends SQLiteOpenHelper {
         return courseList;
     }
 
-    public void addCourse(Course course){
+    public void deleteCourse(Course course){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM " + COURSE_TABLE + " WHERE " +
+                KEY_COURSE + " ='" + course.getCourseTitle() + "'";
+        db.execSQL(query);
+    }
+
+
+
+    public void addTasks(String task,String course, String dueDate){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(KEY_COURSE, course.getCourseTitle());
-        values.put(KEY_DAYS, course.getDays());
-        values.put(KEY_TIME, course.getTime());
-        values.put(KEY_LOCATION, course.getLocation());
-        values.put(KEY_PROFESSOR, course.getProfessorName());
-        values.put(KEY_PROFESSOR_PHONE, course.getProfessorPhone());
-        values.put(KEY_PROFESSOR_EMAIL, course.getProfessorEmail()) ;
-        values.put(KEY_PROFESSOR_OFFICE, course.getProfessorOfficeLocation());
-        values.put(KEY_PROFESSOR_OFFICE_HOURS, course.getProfessorOfficeHours());
-
-        db.insert(COURSE_TABLE, null, values);
-    }
-
-    public void addCourseList(ArrayList<Course> courseList){
-        for(Course course: courseList) addCourse(course);
-    }
-
-    public Course getCourse(String courseName) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + COURSE_TABLE + " WHERE "+ KEY_COURSE + " = ?",new String[]{courseName});
-
-        if (cursor.moveToFirst()) {
-            return new Course(cursor.getString(cursor.getColumnIndex(KEY_COURSE)),
-                    cursor.getString(cursor.getColumnIndex(KEY_DAYS)),
-                    cursor.getString(cursor.getColumnIndex(KEY_TIME)),
-                    cursor.getString(cursor.getColumnIndex(KEY_LOCATION)),
-                    cursor.getString(cursor.getColumnIndex(KEY_PROFESSOR)),
-                    cursor.getString(cursor.getColumnIndex(KEY_PROFESSOR_PHONE)),
-                    cursor.getString(cursor.getColumnIndex(KEY_PROFESSOR_EMAIL)),
-                    cursor.getString(cursor.getColumnIndex(KEY_PROFESSOR_OFFICE)),
-                    cursor.getString(cursor.getColumnIndex(KEY_PROFESSOR_OFFICE_HOURS)));
-        }
-        return null;
+        values.put(KEY_TASK, task);
+        values.put(KEY_COURSE, course);
+        values.put(KEY_DUE_DATE, dueDate);
+        db.insert(TASK_TABLE, null, values);
     }
 
     public ArrayList<Task> getCourseTasks(String courseName) {
@@ -157,37 +191,14 @@ public class DBHelper extends SQLiteOpenHelper {
         return taskList;
     }
 
-    public void addTasks(String task,String course, String dueDate){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-
-        values.put(KEY_TASK, task);
-        values.put(KEY_COURSE, course);
-        values.put(KEY_DUE_DATE, dueDate);
-        db.insert(TASK_TABLE, null, values);
-    }
-
-    public void updateCourse(Course changedCourse){
-        SQLiteDatabase db = this.getWritableDatabase();
-        String query = "UPDATE " + COURSE_TABLE +
-                " SET " + KEY_PROFESSOR + " = '" + changedCourse.getProfessorName() +
-                "', " + KEY_PROFESSOR_PHONE + " = '" + changedCourse.getProfessorPhone() +
-                "', " + KEY_PROFESSOR_EMAIL + " = '" + changedCourse.getProfessorEmail() +
-                "', " + KEY_PROFESSOR_OFFICE + " = '" + changedCourse.getProfessorOfficeLocation() +
-                "', " + KEY_PROFESSOR_OFFICE_HOURS + " = '" + changedCourse.getProfessorOfficeHours() +
-                "', " + KEY_LOCATION + " = '" + changedCourse.getLocation() +
-                "', " + KEY_DAYS + " = '" + changedCourse.getDays() +
-                "', " + KEY_TIME + " = '" + changedCourse.getTime() +
-                "' WHERE " + KEY_COURSE + " = '" + changedCourse.getCourseTitle() + "'";
-        db.execSQL(query);
-    }
-
     public void deleteTask(Task task){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "DELETE FROM " + TASK_TABLE + " WHERE " +
                 KEY_TASK + " ='" + task.getTask() + "'";
         db.execSQL(query);
     }
+
+
 
 
 

@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.i("1", String.valueOf(extractedCourseList.size()));
 
         menu = navigationView.getMenu();
-        MenuItem runtime_item = menu.add(0,0,0, extractedCourseList.get(0).getCourseTitle());
+        /*MenuItem runtime_item = menu.add(0,0,0, extractedCourseList.get(0).getCourseTitle());
         runtime_item.setIcon(R.drawable.ic_school);
 
         runtime_item = menu.add(0,1,0,extractedCourseList.get(1).getCourseTitle());
@@ -116,7 +117,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         runtime_item.setIcon(R.drawable.ic_school);
 
         runtime_item = menu.add(1,5,0,"Add Course");
-        runtime_item.setIcon(R.drawable.ic_add);
+        runtime_item.setIcon(R.drawable.ic_add);*/
+        updateNavigationMenu(extractedCourseList);
 
         //listView.setOnItemClickListener(this::removeOnListItemClick);
 
@@ -241,6 +243,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 });
         android.app.AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    public void deleteAndSwitchFragments(){
+        Fragment newFragment = new CourseFragment();
+
+        extractedCourseList = dbHelper.getAllCourses();
+
+        Bundle bundle = new Bundle();
+        bundle.putString("courseTitle", extractedCourseList.get(0).getCourseTitle());
+        newFragment.setArguments(bundle);
+
+        // Insert the fragment by replacing any existing fragment
+        getSupportActionBar().setTitle("Course Organizer " + extractedCourseList.get(0).getCourseTitle());
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                newFragment).commit();
     }
 
     public ArrayList<Task> getTaskList(){return taskList;}

@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,6 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.function.Predicate;
 
 
 public class CourseFragment extends Fragment {
@@ -300,7 +302,18 @@ public class CourseFragment extends Fragment {
                      */
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //Apply changes
+
+                        ArrayList<Course> courseList = dbHelper.getAllCourses();
+                        for(Course c : courseList){
+                            if(c.getCourseTitle().equals(course.getCourseTitle())){
+                                courseList.remove(c);
+                                break;
+                            }
+                        }
+
+                        dbHelper.deleteCourse(course);
+                        ((MainActivity)getActivity()).updateNavigationMenu(courseList);
+                        ((MainActivity)getActivity()).deleteAndSwitchFragments();
                     }
                 });
         android.app.AlertDialog dialog = builder.create();
