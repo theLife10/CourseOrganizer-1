@@ -1,29 +1,35 @@
 package edu.utep.cs.cs4330.courseorganizer;
 
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.InputType;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import java.util.ArrayList;
-import java.util.function.Predicate;
+import java.util.Calendar;
+import java.util.List;
+
+import ca.antonious.materialdaypicker.MaterialDayPicker;
 
 
 public class CourseFragment extends Fragment {
     ListView listView;
     ArrayList<Task> taskList;
-    CheckBox checkBox;
     Course course;
     TextView textProfessorName;
     TextView textProfessorPhone;
@@ -65,6 +71,9 @@ public class CourseFragment extends Fragment {
         listView = view.findViewById(R.id.listViewTasks);
         listView.setAdapter(listAdapter);
 
+        registerForContextMenu(view.findViewById(R.id.card_view));
+        registerForContextMenu(view.findViewById(R.id.card_view2));
+
         return view;
     }
 
@@ -79,6 +88,53 @@ public class CourseFragment extends Fragment {
         textCourseTime.setText("Time: " + course.getTime());
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        switch (v.getId()){
+            case R.id.card_view:
+                menu.setHeaderTitle("Edit Instructor");
+                getActivity().getMenuInflater().inflate(R.menu.instructor_context_menu, menu);
+
+                break;
+            case R.id.card_view2:
+                menu.setHeaderTitle("Edit Location and Time");
+                getActivity().getMenuInflater().inflate(R.menu.location_context_menu, menu);
+
+                break;
+        }
+        super.onCreateContextMenu(menu, v, menuInfo);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.contextMenuName :
+                editTextDialog(R.id.contextMenuName);
+                break;
+            case R.id.contextMenuPhone :
+                editPhoneDialog();
+                break;
+            case R.id.contextMenuEmail :
+                editTextDialog(R.id.contextMenuEmail);
+                break;
+            case R.id.contextMenuOffice :
+                editTextDialog(R.id.contextMenuOffice);
+                break;
+            case R.id.contextMenuOfficeHours :
+                editTimeDialog(true, R.id.contextMenuOfficeHours);
+                break;
+            case R.id.contextMenuLocation :
+                editTextDialog(R.id.contextMenuLocation);
+                break;
+            case R.id.contextMenuDays :
+                editDayDialog();
+                break;
+            case R.id.contextMenuTime :
+                editTimeDialog(true, R.id.contextMenuTime);
+                break;
+        }
+        return super.onContextItemSelected(item);
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -93,18 +149,215 @@ public class CourseFragment extends Fragment {
             case R.id.courseMenuButtonAdd:
                 addTaskDialog();
                 break;
-            case R.id.courseMenuButtonInstructor:
-                editInstructorDialog();
-                break;
-            case R.id.courseMenuButtonLocation:
-                editLocationDialog();
-                break;
+
             case R.id.courseMenuButtonDelete:
                 deleteCourseDialog();
                 break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void editTextDialog(int id){
+        //Attaches the calling activity to the dialog
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+        //Retrieve and prepare the UI for the dialog box
+        View view = getLayoutInflater().inflate(R.layout.edit_one_dialog, null);
+        EditText editText = view.findViewById(R.id.editText);
+        editText.setInputType(InputType.TYPE_CLASS_TEXT);
+
+        String title;
+        switch (id){
+            case R.id.contextMenuName :
+                title ="Edit Instructor Name";
+                editText.setHint("Enter Name");
+                break;
+            case R.id.contextMenuEmail :
+                title = "Edit Email";
+                editText.setHint("Enter Email");
+                break;
+            case R.id.contextMenuOffice :
+                title = "Edit Office Location";
+                editText.setHint("Enter Office Location");
+                break;
+            case R.id.contextMenuLocation :
+                editText.setHint("Enter Course Location");
+                title = "Edit Location";
+                break;
+            default:
+                title = "Edit";
+                break;
+        }
+
+        //Assigns the UI to the dialog box and sets the title and behavior of positive
+        //and negative buttons
+        builder.setView(view)
+                .setTitle(title)
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (id){
+                            case R.id.contextMenuName :
+                                course.setProfessorName(editText.getText().toString());
+                                dbHelper.updateCourse(course);
+                                break;
+                            case R.id.contextMenuEmail :
+                                course.setProfessorEmail(editText.getText().toString());
+                                dbHelper.updateCourse(course);
+                                break;
+                            case R.id.contextMenuOffice :
+                                course.setProfessorOfficeLocation(editText.getText().toString());
+                                dbHelper.updateCourse(course);
+                                break;
+                            case R.id.contextMenuLocation :
+                                course.setLocation(editText.getText().toString());
+                                dbHelper.updateCourse(course);
+                                break;
+                            default:
+                                break;
+                        }
+                        updateTextViews();
+                    }
+                });
+        android.app.AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void editDateDialog(){
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+        View view = getLayoutInflater().inflate(R.layout.edit_one_dialog, null);
+        EditText editText = view.findViewById(R.id.editText);
+        editText.setInputType(InputType.TYPE_CLASS_DATETIME);
+
+        builder.setView(view)
+                .setTitle("Add Task")
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+        android.app.AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void editTimeDialog(boolean isStart, int id){
+        final Calendar myCalender = Calendar.getInstance();
+        int hour = myCalender.get(Calendar.HOUR_OF_DAY);
+        int minute = myCalender.get(Calendar.MINUTE);
+
+        TimePickerDialog.OnTimeSetListener myTimeListener = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                if (view.isShown()) {
+                    Log.i("Time Picker", String.valueOf(hourOfDay));
+                    myCalender.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                    myCalender.set(Calendar.MINUTE, minute);
+                    final String time = String.valueOf(myCalender.get(Calendar.HOUR_OF_DAY)) +
+                            ":" + String.valueOf(myCalender.get(Calendar.MINUTE));
+
+                    switch (id){
+                        case R.id.contextMenuOfficeHours:
+                                if(isStart){course.setProfessorOfficeHours(time);}
+                                else{
+                                    course.setProfessorOfficeHours(course.getProfessorOfficeHours() + " - " + time);
+                                    updateTextViews();
+                                    dbHelper.updateCourse(course);
+                                }
+                            break;
+                        case R.id.contextMenuTime:
+                            if(isStart){course.setTime(time);}
+                            else{
+                                course.setTime(course.getTime() + " - " + time);
+                                updateTextViews();
+                                dbHelper.updateCourse(course);
+                            }
+                            break;
+                    }
+
+                    if(isStart)editTimeDialog(false, id);
+                }
+            }
+        };
+        TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), android.R.style.Theme_Material_Dialog_NoActionBar, myTimeListener, hour, minute, true);
+        if(isStart){timePickerDialog.setTitle("Choose start time:");}
+        else {timePickerDialog.setTitle("Choose end time:");}
+        timePickerDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        timePickerDialog.show();
+    }
+
+    public void editPhoneDialog(){
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+        View view = getLayoutInflater().inflate(R.layout.edit_one_dialog, null);
+        EditText editText = view.findViewById(R.id.editText);
+        editText.setInputType(InputType.TYPE_CLASS_PHONE);
+
+        builder.setView(view)
+                .setTitle("Add Task")
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        course.setProfessorPhone(textProfessorPhone.getText().toString());
+                        updateTextViews();
+                    }
+                });
+        android.app.AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void editDayDialog(){
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
+        View view = getLayoutInflater().inflate(R.layout.edit_days_dialog, null);
+        MaterialDayPicker dayPicker = view.findViewById(R.id.day_picker);
+
+        builder.setView(view)
+                .setTitle("Select Course Days")
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setPositiveButton("Select", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        List<MaterialDayPicker.Weekday> daysSelected = dayPicker.getSelectedDays();
+                        course.setDays(formatWeekDays(daysSelected));
+                        dbHelper.updateCourse(course);
+                        updateTextViews();
+                    }
+                });
+        android.app.AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public String formatWeekDays(List<MaterialDayPicker.Weekday> weekdays){
+        String formatted = "";
+        for(MaterialDayPicker.Weekday w : weekdays){
+            if(w.toString().equals("THURSDAY")){formatted += "R";}
+            else{
+                formatted += w.toString().charAt(0);
+            }
+        }
+        return formatted;
     }
 
     public void addTaskDialog(){
@@ -120,24 +373,12 @@ public class CourseFragment extends Fragment {
         builder.setView(view)
                 .setTitle("Add Task")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    /**
-                     * Not implemented closes dialog by default.
-                     * @param dialog The associated dialog
-                     * @param which
-                     */
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
                 })
-
                 .setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                    /**
-                     * Determines behavior of apply button on click, passes the string used to pass
-                     * string back to DetailActivity
-                     * @param dialog The associated dialog
-                     * @param which
-                     */
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //Apply changes
@@ -149,120 +390,6 @@ public class CourseFragment extends Fragment {
                         listView.setAdapter(new CustomAdapter(getContext(), taskList));
 
                         dbHelper.addTasks(t.getTask(), t.getCourse(), t.getDueDate());
-                    }
-                });
-        android.app.AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    public void editInstructorDialog(){
-        //Attaches the calling activity to the dialog
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
-        //Retrieve and prepare the UI for the dialog box
-        View view = getLayoutInflater().inflate(R.layout.instructor_dialog, null);
-
-        //Set textViews
-        TextView instructorName = view.findViewById(R.id.editInstructorName);
-        TextView instructorPhone = view.findViewById(R.id.editInstructorPhone);
-        TextView instructorEmail = view.findViewById(R.id.editInstructorEmail);
-        TextView instructorOffice = view.findViewById(R.id.editInstructorOffice);
-        TextView instructorOfficeHours = view.findViewById(R.id.editInstructorOfficeHours);
-
-        instructorName.setText(course.getProfessorName());
-        instructorPhone.setText(course.getProfessorPhone());
-        instructorEmail.setText(course.getProfessorEmail());
-        instructorOffice.setText(course.getProfessorOfficeLocation());
-        instructorOfficeHours.setText(course.getProfessorOfficeLocation());
-
-        //Assigns the UI to the dialog box and sets the title and behavior of positive
-        //and negative buttons
-        builder.setView(view)
-                .setTitle("Edit Instructor")
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    /**
-                     * Not implemented closes dialog by default.
-                     * @param dialog The associated dialog
-                     * @param which
-                     */
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                })
-
-                .setPositiveButton("Apply", new DialogInterface.OnClickListener() {
-                    /**
-                     * Determines behavior of apply button on click, passes the string used to pass
-                     * string back to DetailActivity
-                     * @param dialog The associated dialog
-                     * @param which
-                     */
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //Apply changes
-                        course.setProfessorName(instructorName.getText().toString());
-                        course.setProfessorPhone(instructorPhone.getText().toString());
-                        course.setProfessorEmail(instructorEmail.getText().toString());
-                        course.setProfessorOfficeLocation(instructorOffice.getText().toString());
-                        course.setProfessorOfficeHours(instructorOfficeHours.getText().toString());
-
-                        updateTextViews();
-
-                        dbHelper.updateCourse(course);
-
-                    }
-                });
-        android.app.AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    public void editLocationDialog(){
-        //Attaches the calling activity to the dialog
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
-        //Retrieve and prepare the UI for the dialog box
-        View view = getLayoutInflater().inflate(R.layout.location_dialog, null);
-
-        TextView courseLocation = view.findViewById(R.id.editLocation);
-        TextView courseDays = view.findViewById(R.id.editCourseDays);
-        TextView courseTime = view.findViewById(R.id.editCourseTime);
-
-        courseLocation.setText(course.getLocation());
-        courseDays.setText(course.getDays());
-        courseTime.setText(course.getTime());
-
-
-        //Assigns the UI to the dialog box and sets the title and behavior of positive
-        //and negative buttons
-        builder.setView(view)
-                .setTitle("Edit Location and Time")
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    /**
-                     * Not implemented closes dialog by default.
-                     * @param dialog The associated dialog
-                     * @param which
-                     */
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                })
-
-                .setPositiveButton("Apply", new DialogInterface.OnClickListener() {
-                    /**
-                     * Determines behavior of apply button on click, passes the string used to pass
-                     * string back to DetailActivity
-                     * @param dialog The associated dialog
-                     * @param which
-                     */
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        course.setLocation(courseLocation.getText().toString());
-                        course.setDays(courseDays.getText().toString());
-                        course.setTime(courseTime.getText().toString());
-
-                        updateTextViews();
-
-                        dbHelper.updateCourse(course);
                     }
                 });
         android.app.AlertDialog dialog = builder.create();
@@ -282,24 +409,12 @@ public class CourseFragment extends Fragment {
         builder.setView(view)
                 .setTitle("Delete Course")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    /**
-                     * Not implemented closes dialog by default.
-                     * @param dialog The associated dialog
-                     * @param which
-                     */
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
                 })
-
                 .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                    /**
-                     * Determines behavior of apply button on click, passes the string used to pass
-                     * string back to DetailActivity
-                     * @param dialog The associated dialog
-                     * @param which
-                     */
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
@@ -319,5 +434,4 @@ public class CourseFragment extends Fragment {
         android.app.AlertDialog dialog = builder.create();
         dialog.show();
     }
-
 }

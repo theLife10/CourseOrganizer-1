@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/contextMenuName"
+        android:title="Name" />
+    <item android:id="@+id/contextMenuPhone"
+        android:title="Phone"
+        />
+    <item android:id="@+id/contextMenuEmail"
+        android:title="Email"
+        />
+    <item android:id="@+id/contextMenuOffice"
+        android:title="Office Location"
+        />
+    <item android:id="@+id/contextMenuOfficeHours"
+        android:title="Office Hours"
+        />
+</menu>
