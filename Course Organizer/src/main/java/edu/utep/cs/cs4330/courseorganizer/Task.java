@@ -1,5 +1,14 @@
 package edu.utep.cs.cs4330.courseorganizer;
 
+/**
+ * @author Kenneth Ward & Jesus Garcia
+ * @version 1.0
+ * @since 5/8/2019
+ */
+
+/**
+ * A class for storing and retrieving information related to tasks and assignments
+ */
 public class Task {
     private String task;
     private String course;

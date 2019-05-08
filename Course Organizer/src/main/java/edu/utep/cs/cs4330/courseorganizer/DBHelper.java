@@ -1,5 +1,11 @@
 package edu.utep.cs.cs4330.courseorganizer;
 
+/**
+ * @author Kenneth Ward & Jesus Garcia
+ * @version 1.0
+ * @since 5/8/2019
+ */
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -10,20 +16,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
+    //Defining the database and its tables
     private static final int DB_VERSION = 1;
     private static final String DB_NAME = "courseDatabase";
     private static final String COURSE_TABLE = "courses";
     private static final String TASK_TABLE = "tasks";
 
-    //Both tables
+    //Columns of both tables
     private static final String KEY_ID = "_id";
     private static final String KEY_COURSE = "courseName";
 
-    //Task Table
+    //Columns of Task Table
     private static final String KEY_TASK = "task";
     private static final String KEY_DUE_DATE = "dueDate";
 
-    //Course Table
+    //Columns of Course Table
     private static final String KEY_DAYS = "days";
     private static final String KEY_TIME = "time";
     private static final String KEY_LOCATION = "location";
@@ -33,6 +40,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String KEY_PROFESSOR_OFFICE = "professorOffice";
     private static final String KEY_PROFESSOR_OFFICE_HOURS = "professorOfficeHours";
 
+    //SQLite query string for creating the task table
     private static final String CREATE_TASK_TABLE = "CREATE TABLE " + TASK_TABLE + "("
             + KEY_ID + " INTEGER PRIMARY KEY, "
             + KEY_COURSE+ " TEXT, "
@@ -40,6 +48,7 @@ public class DBHelper extends SQLiteOpenHelper {
             + KEY_DUE_DATE + " TEXT"
             + ")";
 
+    //SQLite query string for creating the course table
     private static final String CREATE_COURSE_TABLE = "CREATE TABLE " + COURSE_TABLE + "("
             + KEY_ID + " INTEGER PRIMARY KEY, "
             + KEY_COURSE+ " TEXT, "
@@ -72,6 +81,10 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
+    /**
+     * Adds all fields from a course object to the database
+     * @param course The course to be copied
+     */
     public void addCourse(Course course){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -89,10 +102,18 @@ public class DBHelper extends SQLiteOpenHelper {
         db.insert(COURSE_TABLE, null, values);
     }
 
+    /**
+     * Adds an entire list of course objects
+     * @param courseList The list to be added
+     */
     public void addCourseList(ArrayList<Course> courseList){
         for(Course course: courseList) addCourse(course);
     }
 
+    /**
+     * Allows the database to change columns pertaining to a specific course.
+     * @param changedCourse The course to be changed
+     */
     public void updateCourse(Course changedCourse){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "UPDATE " + COURSE_TABLE +
@@ -108,6 +129,12 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
+    /**
+     * Makes a query from the database using the course name. Once the
+     * course is found in the database a course object is created and returned
+     * @param courseName The name of the course to be retrieved
+     * @return Returns a course of the same title contained in the database
+     */
     public Course getCourse(String courseName) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + COURSE_TABLE + " WHERE "+ KEY_COURSE + " = ?",new String[]{courseName});
@@ -126,6 +153,9 @@ public class DBHelper extends SQLiteOpenHelper {
         return null;
     }
 
+    /**
+     * @return a list of all courses contained in the database
+     */
     public ArrayList<Course> getAllCourses(){
         ArrayList<Course> courseList = new ArrayList<>();
 
@@ -156,6 +186,10 @@ public class DBHelper extends SQLiteOpenHelper {
         return courseList;
     }
 
+    /**
+     * Removes courses with same name as the given course
+     * @param course The course to be removed
+     */
     public void deleteCourse(Course course){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "DELETE FROM " + COURSE_TABLE + " WHERE " +
@@ -163,8 +197,12 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
-
-
+    /**
+     * Adds a task to the database
+     * @param task The task description
+     * @param course The associated course
+     * @param dueDate Task due date
+     */
     public void addTasks(String task,String course, String dueDate){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -191,19 +229,16 @@ public class DBHelper extends SQLiteOpenHelper {
         return taskList;
     }
 
+    /**
+     * Removes tasks fom the database with the same description
+     * @param task
+     */
     public void deleteTask(Task task){
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "DELETE FROM " + TASK_TABLE + " WHERE " +
                 KEY_TASK + " ='" + task.getTask() + "'";
         db.execSQL(query);
     }
-
-
-
-
-
-
-
 
 
     public void deleteData(String id){

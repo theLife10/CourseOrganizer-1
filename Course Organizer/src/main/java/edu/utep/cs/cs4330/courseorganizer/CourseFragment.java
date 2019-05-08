@@ -1,4 +1,8 @@
 package edu.utep.cs.cs4330.courseorganizer;
+/** @author Kenneth Ward
+ * @version 1.0
+ * @since 5/8/2019
+ */
 
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
@@ -26,7 +30,12 @@ import java.util.List;
 
 import ca.antonious.materialdaypicker.MaterialDayPicker;
 
-
+/**
+ * CourseFragment course is responsible for displaying all information related
+ * to a specific course. Gets course information through queries to an SQLite database
+ * containing all the courses, and uses this information to populate UI's.
+ * CourseFragment also updates the database if course informatoin is modified by the user.
+ */
 public class CourseFragment extends Fragment {
     ListView listView;
     ArrayList<Task> taskList;
@@ -41,15 +50,21 @@ public class CourseFragment extends Fragment {
     TextView textCourseTime;
     DBHelper dbHelper;
 
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        //Setting the layout
         View view =  inflater.inflate(R.layout.fragment_course, container, false);
+
+        //Retrieving the database of courses
         dbHelper = new DBHelper(getContext());
         course = dbHelper.getCourse(getArguments().getString("courseTitle"));
 
+        //Allows the CourseFragment to display an options menu
         setHasOptionsMenu(true);
 
+        //All TextViews that display course info are retrieved
         textProfessorName = view.findViewById(R.id.textProfessorName);
         textProfessorPhone = view.findViewById(R.id.textProfessorPhone);
         textProfessorEmail = view.findViewById(R.id.textProfessorEmail);
@@ -59,24 +74,32 @@ public class CourseFragment extends Fragment {
         textCourseDays = view.findViewById(R.id.textCourseDays);
         textCourseTime = view.findViewById(R.id.textCourseTime);
 
+        //The TextViews are populated with information from the course
         updateTextViews();
 
+        //Color theme is set
         view.findViewById(R.id.titleInstructor).setBackgroundColor(Color.rgb(0, 142, 180));
         view.findViewById(R.id.titleLocation).setBackgroundColor(Color.rgb(0, 142, 180));
         view.findViewById(R.id.titleTasks).setBackgroundColor(Color.rgb(0, 142, 180));
 
-
+        //The specific course that the fragment was called to display is retrieved
+        //from the database
         taskList = dbHelper.getCourseTasks(getArguments().getString("courseTitle"));
         CustomAdapter listAdapter = new CustomAdapter(getContext(), taskList);
         listView = view.findViewById(R.id.listViewTasks);
         listView.setAdapter(listAdapter);
 
+        //Allows the first two CardViews to have context menus
         registerForContextMenu(view.findViewById(R.id.card_view));
         registerForContextMenu(view.findViewById(R.id.card_view2));
 
         return view;
     }
 
+    /**
+     * A helper method that is typically called after one or more course fields have been modified.
+     * Helps keep TextViews formatted.
+     */
     public void updateTextViews(){
         textProfessorName.setText(course.getProfessorName());
         textProfessorPhone.setText("Phone: " + course.getProfessorPhone());
@@ -88,6 +111,8 @@ public class CourseFragment extends Fragment {
         textCourseTime.setText("Time: " + course.getTime());
     }
 
+    //Initializes the layout for the context menu. The menu is dynamically
+    // selected based on which view called it.
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         switch (v.getId()){
@@ -107,6 +132,8 @@ public class CourseFragment extends Fragment {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+        //Switch statement decides which dialog will be opened
+        //based on which MenuItem in the context menu was pressed.
         switch (item.getItemId()){
             case R.id.contextMenuName :
                 editTextDialog(R.id.contextMenuName);
@@ -138,13 +165,14 @@ public class CourseFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        //OPtions menu layout set
         inflater.inflate(R.menu.course_fragment_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
+        //Decides which dialog to opened based on which options menu item was pressed
         switch(item.getItemId()){
             case R.id.courseMenuButtonAdd:
                 addTaskDialog();
@@ -158,6 +186,12 @@ public class CourseFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * A helper method that configures a dialog which is used to edit multiple
+     * fields in the CourseFragment, dynamically changes the title, entry field, and more,
+     * based on where it was called from
+     * @param id The resource id of the MenuItem which triggered this method.
+     */
     public void editTextDialog(int id){
         //Attaches the calling activity to the dialog
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
@@ -166,6 +200,7 @@ public class CourseFragment extends Fragment {
         EditText editText = view.findViewById(R.id.editText);
         editText.setInputType(InputType.TYPE_CLASS_TEXT);
 
+        //Sets the title and editText hint based on which button was pressed
         String title;
         switch (id){
             case R.id.contextMenuName :
@@ -188,7 +223,6 @@ public class CourseFragment extends Fragment {
                 title = "Edit";
                 break;
         }
-
         //Assigns the UI to the dialog box and sets the title and behavior of positive
         //and negative buttons
         builder.setView(view)
@@ -202,6 +236,7 @@ public class CourseFragment extends Fragment {
                 .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        //Determines which course field to modify
                         switch (id){
                             case R.id.contextMenuName :
                                 course.setProfessorName(editText.getText().toString());
@@ -229,9 +264,14 @@ public class CourseFragment extends Fragment {
         dialog.show();
     }
 
+    /**
+     * Not yet implemented
+     */
     public void editDateDialog(){
+        //Sets dialog layout
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
         View view = getLayoutInflater().inflate(R.layout.edit_one_dialog, null);
+        //Formats editText to take in dates and times
         EditText editText = view.findViewById(R.id.editText);
         editText.setInputType(InputType.TYPE_CLASS_DATETIME);
 
@@ -253,24 +293,38 @@ public class CourseFragment extends Fragment {
         dialog.show();
     }
 
+    /**
+     * A helper method which initializes and configures a dialog which is used
+     * to modify the time and professorOfficeHours field of the course. Calls itself
+     * once to recieve the end time of either the course or office hours
+     * @param isStart True ndicates if this is the first call to the method.
+     *                False indicates it has been called a second time to accept to emd time from the user.
+     * @param id
+     */
     public void editTimeDialog(boolean isStart, int id){
+        //Creates calender object to communicate with TimePickerDialog
         final Calendar myCalender = Calendar.getInstance();
         int hour = myCalender.get(Calendar.HOUR_OF_DAY);
         int minute = myCalender.get(Calendar.MINUTE);
 
+        //Sets the listener that is called when the time is set
         TimePickerDialog.OnTimeSetListener myTimeListener = new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 if (view.isShown()) {
+                    //Updates the calendar object
                     Log.i("Time Picker", String.valueOf(hourOfDay));
                     myCalender.set(Calendar.HOUR_OF_DAY, hourOfDay);
                     myCalender.set(Calendar.MINUTE, minute);
                     final String time = String.valueOf(myCalender.get(Calendar.HOUR_OF_DAY)) +
                             ":" + String.valueOf(myCalender.get(Calendar.MINUTE));
 
+                    //Decides which time textview to modify. Updates database and UI
                     switch (id){
                         case R.id.contextMenuOfficeHours:
+                            //Wipes the old time and adds new start time
                             if(isStart){course.setProfessorOfficeHours(time);}
+                            //Appends the end time
                             else{
                                 course.setProfessorOfficeHours(course.getProfessorOfficeHours() + " - " + time);
                                 updateTextViews();
@@ -278,7 +332,9 @@ public class CourseFragment extends Fragment {
                             }
                             break;
                         case R.id.contextMenuTime:
+                            //Wipes the old time and adds new start time
                             if(isStart){course.setTime(time);}
+                            //Appends the end time
                             else{
                                 course.setTime(course.getTime() + " - " + time);
                                 updateTextViews();
@@ -287,10 +343,13 @@ public class CourseFragment extends Fragment {
                             break;
                     }
 
+                    //Opens the dialog
                     if(isStart)editTimeDialog(false, id);
                 }
             }
         };
+
+        //Starts the dialog
         TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), android.R.style.Theme_Material_Dialog_NoActionBar, myTimeListener, hour, minute, true);
         if(isStart){timePickerDialog.setTitle("Choose start time:");}
         else {timePickerDialog.setTitle("Choose end time:");}
@@ -298,7 +357,11 @@ public class CourseFragment extends Fragment {
         timePickerDialog.show();
     }
 
+    /**
+     * Helper method for creating a dialog that lets the user edit the instructor's phone number.
+     */
     public void editPhoneDialog(){
+        //Set dialog layout
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
         View view = getLayoutInflater().inflate(R.layout.edit_one_dialog, null);
         EditText editText = view.findViewById(R.id.editText);
@@ -323,9 +386,13 @@ public class CourseFragment extends Fragment {
         dialog.show();
     }
 
+    /**
+     * Creates a dialog that allows the user to specify what days of the week the course falls on.
+     */
     public void editDayDialog(){
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
         View view = getLayoutInflater().inflate(R.layout.edit_days_dialog, null);
+        //Retrieves MaterialDay picker from XML
         MaterialDayPicker dayPicker = view.findViewById(R.id.day_picker);
 
         builder.setView(view)
@@ -339,8 +406,13 @@ public class CourseFragment extends Fragment {
                 .setPositiveButton("Select", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        //Recieves selected days
                         List<MaterialDayPicker.Weekday> daysSelected = dayPicker.getSelectedDays();
+
+                        //Assign formatted weekdays to course
                         course.setDays(formatWeekDays(daysSelected));
+
+                        //Update UI and DB
                         dbHelper.updateCourse(course);
                         updateTextViews();
                     }
@@ -349,6 +421,13 @@ public class CourseFragment extends Fragment {
         dialog.show();
     }
 
+    /**
+     * Takes in the list of Weekday objects returned by MaterialDayPicker object, and
+     * converts the weekdays into one letter representations for each weekday i.e
+     * {MONDAY, WEDNESDAY, FRIDAY} becomes MWF
+     * @param weekdays weekdays objects
+     * @return
+     */
     public String formatWeekDays(List<MaterialDayPicker.Weekday> weekdays){
         String formatted = "";
         for(MaterialDayPicker.Weekday w : weekdays){
@@ -360,6 +439,10 @@ public class CourseFragment extends Fragment {
         return formatted;
     }
 
+    /**
+     * Creates a dialog that allows the user to add a task to the course task list.
+     * Recieves a task description and a due date.
+     */
     public void addTaskDialog(){
         //Attaches the calling activity to the dialog
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
@@ -381,14 +464,16 @@ public class CourseFragment extends Fragment {
                 .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //Apply changes
+                        //Creates new task object
                         Task t = new Task(((TextView)view.findViewById(R.id.addTask)).getText().toString(),
                                 course.getCourseTitle(),
                                 ((TextView)view.findViewById(R.id.addTask)).getText().toString());
 
+                        //Updates listView
                         taskList.add(t);
                         listView.setAdapter(new CustomAdapter(getContext(), taskList));
 
+                        //Updates DB
                         dbHelper.addTasks(t.getTask(), t.getCourse(), t.getDueDate());
                     }
                 });
@@ -396,6 +481,9 @@ public class CourseFragment extends Fragment {
         dialog.show();
     }
 
+    /**
+     * Creates a dialog that allows the user to delete a course.
+     */
     public void deleteCourseDialog(){
         //Attaches the calling activity to the dialog
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
@@ -418,6 +506,7 @@ public class CourseFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
+                        //The current course being displayed is removed from the database
                         ArrayList<Course> courseList = dbHelper.getAllCourses();
                         for(Course c : courseList){
                             if(c.getCourseTitle().equals(course.getCourseTitle())){
@@ -425,8 +514,9 @@ public class CourseFragment extends Fragment {
                                 break;
                             }
                         }
-
                         dbHelper.deleteCourse(course);
+
+                        //The navigation menu is updated and a new CourseFragment for another course is opened
                         ((MainActivity)getActivity()).updateNavigationMenu(courseList);
                         ((MainActivity)getActivity()).deleteAndSwitchFragments();
                     }
