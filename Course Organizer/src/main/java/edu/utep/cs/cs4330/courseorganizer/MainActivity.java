@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -154,13 +155,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         if(item.getGroupId() == 1){
-            addCourseDialog();
+            addCourseDialog1();
             return true;
         }
 
         Fragment fragment = new CourseFragment();
         Bundle bundle = new Bundle();
         bundle.putString("courseTitle", extractedCourseList.get(item.getItemId()).getCourseTitle());
+        bundle.putInt("position", item.getItemId());
         fragment.setArguments(bundle);
 
         getSupportActionBar().setTitle("Course Organizer " + extractedCourseList.get(item.getItemId()).getCourseTitle());
@@ -258,6 +260,119 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportActionBar().setTitle("Course Organizer " + extractedCourseList.get(0).getCourseTitle());
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                 newFragment).commit();
+    }
+
+    public void addCourseDialog1(){
+        //Attaches the calling activity to the dialog
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
+        //Retrieve and prepare the UI for the dialog box
+        View view = getLayoutInflater().inflate(R.layout.add_course_1, null);
+        EditText addCourseTitle = view.findViewById(R.id.addCourseTitle);
+        //Set textViews
+
+        //Assigns the UI to the dialog box and sets the title and behavior of positive
+        //and negative buttons
+        builder.setView(view)
+                .setTitle("Add Course")
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setPositiveButton("Next", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Course newCourse = new Course(addCourseTitle.getText().toString());
+                        addCourseDialog2(newCourse);
+                    }
+                });
+        android.app.AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void addCourseDialog2(Course newCourse){
+        //Attaches the calling activity to the dialog
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
+        //Retrieve and prepare the UI for the dialog box
+        View view = getLayoutInflater().inflate(R.layout.add_course_2, null);
+
+        //Assigns the UI to the dialog box and sets the title and behavior of positive
+        //and negative buttons
+        builder.setView(view)
+                .setTitle("Instructor Information")
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setPositiveButton("Next", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        newCourse.setProfessorName(((EditText)view.findViewById(R.id.addInstructorName)).getText().toString());
+                        newCourse.setProfessorPhone(((EditText)view.findViewById(R.id.addInstructorPhone)).getText().toString());
+                        newCourse.setProfessorEmail(((EditText)view.findViewById(R.id.addInstructorEmail)).getText().toString());
+                    }
+                });
+        android.app.AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void addCourseDialog3(){
+        //Attaches the calling activity to the dialog
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
+        //Retrieve and prepare the UI for the dialog box
+        View view = getLayoutInflater().inflate(R.layout.delete_dialog, null);
+
+        //Set textViews
+
+        //Assigns the UI to the dialog box and sets the title and behavior of positive
+        //and negative buttons
+        builder.setView(view)
+                .setTitle("Delete Course")
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+        android.app.AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void addCourseDialog4(){
+        //Attaches the calling activity to the dialog
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
+        //Retrieve and prepare the UI for the dialog box
+        View view = getLayoutInflater().inflate(R.layout.delete_dialog, null);
+
+        //Set textViews
+
+        //Assigns the UI to the dialog box and sets the title and behavior of positive
+        //and negative buttons
+        builder.setView(view)
+                .setTitle("Delete Course")
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+        android.app.AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     public ArrayList<Task> getTaskList(){return taskList;}

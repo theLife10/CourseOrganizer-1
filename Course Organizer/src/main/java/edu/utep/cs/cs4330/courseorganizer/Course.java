@@ -20,6 +20,10 @@ public class Course {
     private String professorOfficeLocation;
     private String professorOfficeHours;
 
+    public Course(String courseTitle){
+        this.courseTitle = courseTitle;
+    }
+
     public Course(String courseTitle, String days, String time, String location, String professorName,
                   String professorPhone, String professorEmail, String professorOfficeLocation,
                   String professorOfficeHours){

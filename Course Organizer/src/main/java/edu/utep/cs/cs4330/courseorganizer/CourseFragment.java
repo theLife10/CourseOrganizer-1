@@ -77,10 +77,30 @@ public class CourseFragment extends Fragment {
         //The TextViews are populated with information from the course
         updateTextViews();
 
+        int position = getArguments().getInt("position");
+        Log.i("Course Position", String.valueOf(position));
+        Log.i("Position mod 3", String.valueOf(position%3));
+
+        int red, green, blue;
+        if(position%3 == 0){
+            red = 0;
+            green = 142;
+            blue = 180;
+        }
+        else if(position%3 == 1){
+            red = 31;
+            green = 184;
+            blue = 230;
+        }
+        else{
+            red = 38;
+            green = 187;
+            blue = 203;
+        }
         //Color theme is set
-        view.findViewById(R.id.titleInstructor).setBackgroundColor(Color.rgb(0, 142, 180));
-        view.findViewById(R.id.titleLocation).setBackgroundColor(Color.rgb(0, 142, 180));
-        view.findViewById(R.id.titleTasks).setBackgroundColor(Color.rgb(0, 142, 180));
+        view.findViewById(R.id.titleInstructor).setBackgroundColor(Color.rgb(red, green, blue));
+        view.findViewById(R.id.titleLocation).setBackgroundColor(Color.rgb(red, green, blue));
+        view.findViewById(R.id.titleTasks).setBackgroundColor(Color.rgb(red, green, blue));
 
         //The specific course that the fragment was called to display is retrieved
         //from the database
@@ -366,9 +386,10 @@ public class CourseFragment extends Fragment {
         View view = getLayoutInflater().inflate(R.layout.edit_one_dialog, null);
         EditText editText = view.findViewById(R.id.editText);
         editText.setInputType(InputType.TYPE_CLASS_PHONE);
+        editText.setHint("Enter phone number");
 
         builder.setView(view)
-                .setTitle("Add Task")
+                .setTitle("Edit Phone")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
